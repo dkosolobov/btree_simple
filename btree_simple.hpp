@@ -54,7 +54,7 @@ static struct bnode : bleaf {
 class btree_simple {
 	bnode* root = (bnode*) new bleaf{ true };
 public:
-	bool search(uint32_t key) { return root->search(key); }
+	bool search(uint32_t key) const { return root->search(key); }
 
 	void insert(uint32_t key) {
 		auto [okey, overflow_node] = root->insert(key);
