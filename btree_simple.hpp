@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <tuple>
 
 static const int b = 16;  // sizeof(key) * b = 64 (длина кеш линии)
 static struct bleaf {
@@ -29,7 +30,7 @@ static struct bnode : bleaf {
 		}
 		if (++count <= 2 * b)
 			return { 0, nullptr };  // "наверх" ничего не идёт
-		auto split = leaf ? reinterpret_cast<bnode*>(new bleaf{ true }) : new bnode{ false };
+		auto split = leaf ? (bnode*) new bleaf{ true } : new bnode{ false };
 		count = split->count = b;  // в keys сейчас 2b+1 ключей; keys[b] "пойдёт наверх"
 		std::copy(keys + b + 1, keys + 2 * b + 1, split->keys);
 		if (!leaf)
@@ -51,10 +52,8 @@ static struct bnode : bleaf {
 };
 
 class btree_simple {
-	bnode* root;
+	bnode* root = (bnode*) new bleaf{ true };
 public:
-	btree_simple() { root = reinterpret_cast<bnode*>(new bleaf{true}); }
-
 	bool search(uint32_t key) { return root->search(key); }
 
 	void insert(uint32_t key) {
