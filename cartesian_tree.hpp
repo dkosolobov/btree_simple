@@ -5,30 +5,35 @@ class cartesian_tree { //e-maxx's implementation
 	struct item {
 		Tkey key;
 		int prior;
-		item* l, * r;
+		item* left, * right;
 		item() { }
-		item(Tkey key, int prior) : key(key), prior(prior), l(nullptr), r(nullptr) { }
+		item(Tkey key, int prior) : key(key), prior(prior), left(nullptr), right(nullptr) { }
 	};
 	typedef item* pitem;
 
 	pitem root;
 
-	void split(pitem t, Tkey key, pitem& l, pitem& r) {
-		if (!t)
-			l = r = nullptr;
-		else if (key < t->key)
-			split(t->l, key, l, t->l), r = t;
-		else
-			split(t->r, key, t->r, r), l = t;
+	void split(pitem node, Tkey key, pitem& left, pitem& right) {
+		if (!node) {
+			left = right = nullptr;
+		} else if (key < node->key) {
+			split(node->left, key, left, node->left);
+			right = node;
+		} else {
+			split(node->right, key, node->right, right);
+			left = node;
+		}
 	}
 
-	void insert(pitem& t, pitem it) {
-		if (!t)
-			t = it;
-		else if (it->prior > t->prior)
-			split(t, it->key, it->l, it->r), t = it;
-		else
-			insert(it->key < t->key ? t->l : t->r, it);
+	void insert(pitem& node, pitem inode) {
+		if (!node)
+			node = inode;
+		else if (inode->prior > node->prior) {
+			split(node, inode->key, inode->left, inode->right);
+			node = inode;
+		} else {
+			insert(inode->key < node->key ? node->left : node->right, inode);
+		}
 	}
 
 public:
@@ -40,9 +45,9 @@ public:
 		auto node = root;
 		while (node != nullptr) {
 			if (node->key > key)
-				node = node->l;
+				node = node->left;
 			else if (node->key < key)
-				node = node->r;
+				node = node->right;
 			else
 				return true;
 		}

@@ -10,12 +10,10 @@ class btree_simple {
 	struct bleaf {
 		bool leaf;
 		uint8_t count;
-		Tkey keys[2 * b + 1];  // последний key не используется (для упрощения реализации)
-		//bleaf(bool leaf = true) : leaf{leaf}, count{0} {}
+		Tkey keys[2 * b + 1];  // РїРѕСЃР»РµРґРЅРёР№ key РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ (РґР»СЏ СѓРїСЂРѕС‰РµРЅРёСЏ СЂРµР°Р»РёР·Р°С†РёРё)
 	};
 	struct bnode : public bleaf {
-		bnode* kids[2 * b + 2]; // последний kid не используется (для упрощения реализации)
-		//bnode() : bleaf(false) { }
+		bnode* kids[2 * b + 2]; // РїРѕСЃР»РµРґРЅРёР№ kid РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ (РґР»СЏ СѓРїСЂРѕС‰РµРЅРёСЏ СЂРµР°Р»РёР·Р°С†РёРё)
 	};
 
 	bnode* root;
@@ -23,7 +21,7 @@ class btree_simple {
 	static size_t first_non_smaller_key(bnode* node, Tkey key) {
 		size_t i = 0;
 		while (i < node->count && node->keys[i] < key)
-			i++;  // на коротком массиве linsearch быстрее binsearch
+			i++;  // РЅР° РєРѕСЂРѕС‚РєРѕРј РјР°СЃСЃРёРІРµ linsearch Р±С‹СЃС‚СЂРµРµ binsearch
 		return i;
 	}
 
@@ -36,21 +34,21 @@ class btree_simple {
 
 	static std::pair<Tkey, bnode*> insert_at_pos(bnode* node, size_t pos, Tkey key, bnode* node_after_key) {
 		memmove(node->keys + pos + 1, node->keys + pos, (node->count - pos) * sizeof(Tkey));
-		node->keys[pos] = key;  // "раздвигаем" keys и kids, чтобы вставить key и node_after_key
+		node->keys[pos] = key;  // "СЂР°Р·РґРІРёРіР°РµРј" keys Рё kids, С‡С‚РѕР±С‹ РІСЃС‚Р°РІРёС‚СЊ key Рё node_after_key
 		if (!node->leaf) {
 			memmove(node->kids + pos + 2, node->kids + pos + 1, (node->count - pos) * sizeof(bnode*));
 			node->kids[pos + 1] = node_after_key;
 		}
 		node->count++;
 		if (node->count <= 2 * b)
-			return { Tkey(), nullptr };  // вставка закончена, "наверх" ничего не идёт
+			return { Tkey(), nullptr };  // РІСЃС‚Р°РІРєР° Р·Р°РєРѕРЅС‡РµРЅР°, "РЅР°РІРµСЂС…" РЅРёС‡РµРіРѕ РЅРµ РёРґС‘С‚
 
 		auto split = node->leaf ? reinterpret_cast<bnode*>(new bleaf{ true }) : new bnode{ false };
-		split->count = node->count = b;  // в node сейчас 2b+1 ключей; node->keys[b] "пойдёт наверх"
+		split->count = node->count = b;  // РІ node СЃРµР№С‡Р°СЃ 2b+1 РєР»СЋС‡РµР№; node->keys[b] "РїРѕР№РґС‘С‚ РЅР°РІРµСЂС…"
 		std::copy(node->keys + b + 1, node->keys + 2 * b + 1, split->keys);
 		if (!node->leaf)
 			std::copy(node->kids + b + 1, node->kids + 2 * b + 2, split->kids);
-		return { node->keys[b], split };  // ключ node->keys[b] не входит в node и "идёт наверх"
+		return { node->keys[b], split };  // РєР»СЋС‡ node->keys[b] РЅРµ РІС…РѕРґРёС‚ РІ node Рё "РёРґС‘С‚ РЅР°РІРµСЂС…"
 	}
 
 	static std::pair<Tkey, bnode*> insert(bnode* node, Tkey key) {
@@ -70,7 +68,7 @@ public:
 
 	void insert(Tkey key) {
 		auto [okey, overflow_node] = insert(root, key);
-		if (overflow_node != nullptr)  // увеличиваем высоту дерева "вверх"
+		if (overflow_node != nullptr)  // СѓРІРµР»РёС‡РёРІР°РµРј РІС‹СЃРѕС‚Сѓ РґРµСЂРµРІР° "РІРІРµСЂС…"
 			root = new bnode{ false, 1, { okey }, { root, overflow_node } };
 	}
 };
