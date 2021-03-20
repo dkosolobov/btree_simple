@@ -1,3 +1,4 @@
+#pragma once
 #include <algorithm>
 
 template<typename Tkey>
@@ -26,9 +27,9 @@ class cartesian_tree { //e-maxx's implementation
 	}
 
 	void insert(pitem& node, pitem inode) {
-		if (!node)
+		if (!node) {
 			node = inode;
-		else if (inode->prior > node->prior) {
+		} else if (inode->prior > node->prior) {
 			split(node, inode->key, inode->left, inode->right);
 			node = inode;
 		} else {
@@ -42,14 +43,10 @@ public:
 	void insert(Tkey key, int prior) { insert(root, new item(key, prior)); }
 
 	bool search(Tkey key) {
-		auto node = root;
-		while (node != nullptr) {
-			if (node->key > key)
-				node = node->left;
-			else if (node->key < key)
-				node = node->right;
-			else
+		for (auto node = root; node != nullptr; ) {
+			if (node->key == key)
 				return true;
+			node = node->key > key ? node->left : node->right;
 		}
 		return false;
 	}
