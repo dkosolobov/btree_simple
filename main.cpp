@@ -15,8 +15,8 @@ int main()
     std::default_random_engine generator(rand_dev());
     std::uniform_int_distribution<int> udist(0, INT_MAX);
 
-    std::vector<int> content;
-    std::vector<int> seq;
+    std::vector<uint32_t> content;
+    std::vector<uint32_t> seq;
     std::vector<int> op;
     std::vector<int> priors;
 
@@ -45,7 +45,7 @@ int main()
     std::cout << "Start!" << std::endl;
 
     int sum1 = 0;
-    btree_simple<int, 16> btree;
+    btree_simple btree;
     auto start = std::chrono::steady_clock::now();
     for (int i = 0; i < n; i++) {
         if (op[i] == 0) {
@@ -60,7 +60,7 @@ int main()
 
 
     int sum2 = 0;
-    std::set<int> set;
+    std::set<uint32_t> set;
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < n; i++) {
         if (op[i] == 0) {
@@ -74,23 +74,23 @@ int main()
         << " ms" << std::endl;
   
 
-    int sum3 = 0;
-    btree_simple<int, 8> btree2;
-    start = std::chrono::steady_clock::now();
-    for (int i = 0; i < n; i++) {
-        if (op[i] == 0) {
-            btree2.insert(seq[i]);
-        } else if (op[i] == 1) {
-            sum3 += btree2.search(seq[i]) ? 1 : 0;
-        }
-    }
-    end = std::chrono::steady_clock::now();
-    std::cout << "duration tree8  = " << std::chrono::duration<double, std::milli>(end - start).count()
-        << " ms" << std::endl;
+    //int sum3 = 0;
+    //btree_simple<int, 8> btree2;
+    //start = std::chrono::steady_clock::now();
+    //for (int i = 0; i < n; i++) {
+    //    if (op[i] == 0) {
+    //        btree2.insert(seq[i]);
+    //    } else if (op[i] == 1) {
+    //        sum3 += btree2.search(seq[i]) ? 1 : 0;
+    //    }
+    //}
+    //end = std::chrono::steady_clock::now();
+    //std::cout << "duration tree8  = " << std::chrono::duration<double, std::milli>(end - start).count()
+    //    << " ms" << std::endl;
 
 
     int sum4 = 0;
-    cartesian_tree<int> ctree;
+    cartesian_tree<uint32_t> ctree;
     start = std::chrono::steady_clock::now();
     for (int i = 0; i < n; i++) {
         if (op[i] == 0) {
@@ -103,9 +103,8 @@ int main()
     std::cout << "duration ctree  = " << std::chrono::duration<double, std::milli>(end - start).count()
         << " ms" << std::endl;
 
-
-    if (sum1 != sum2 || sum1 != sum3 || sum1 != sum4) {
+    if (sum1 != sum2 || sum1 != sum4) {
         std::cout << "Sums are not equal: " 
-            << sum1 << ' ' << sum2 << ' ' << sum3 << ' ' << sum4 << std::endl;
+            << sum1 << ' ' << sum2 << ' ' << sum4 << std::endl;
     }
 }
