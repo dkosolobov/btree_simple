@@ -5,11 +5,11 @@ static const int b = 16;  // sizeof(key) * b = 64 (длина кеш линии)
 static struct bleaf {
 	bool leaf;
 	uint8_t count;
-	uint32_t keys[2 * b + 1];  // последний key не используется (для упрощения реализации)
+	uint32_t keys[2 * b + 1];  // key[2*b] не используется (он нужен для упрощения реализации)
 };
 
 static struct bnode : bleaf {
-	bnode* kids[2 * b + 2];    // последний kid не используется (для упрощения реализации)
+	bnode* kids[2 * b + 2];    // kid[2*b+1] не используется (он нужен для упрощения реализации)
 
 	bool search(uint32_t key) const {
 		size_t i = 0;
@@ -30,11 +30,11 @@ static struct bnode : bleaf {
 		if (++count <= 2 * b)
 			return { 0, nullptr };  // "наверх" ничего не идёт
 		auto split = leaf ? reinterpret_cast<bnode*>(new bleaf{ true }) : new bnode{ false };
-		count = split->count = b;  // в node сейчас 2b+1 ключей; keys[b] "пойдёт наверх"
+		count = split->count = b;  // в keys сейчас 2b+1 ключей; keys[b] "пойдёт наверх"
 		std::copy(keys + b + 1, keys + 2 * b + 1, split->keys);
 		if (!leaf)
 			std::copy(kids + b + 1, kids + 2 * b + 2, split->kids);
-		return { keys[b], split };  // ключ keys[b] не входит в node и "идёт наверх"
+		return { keys[b], split };  // ключ keys[b] не входит в узел и "идёт наверх"
 	}
 
 	std::pair<uint32_t, bnode*> insert(uint32_t key) {
