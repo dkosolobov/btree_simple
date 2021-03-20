@@ -12,8 +12,6 @@ class cartesian_tree { //e-maxx's implementation
 	};
 	typedef item* pitem;
 
-	pitem root;
-
 	void split(pitem node, Tkey key, pitem& left, pitem& right) {
 		if (!node) {
 			left = right = nullptr;
@@ -37,9 +35,8 @@ class cartesian_tree { //e-maxx's implementation
 		}
 	}
 
+	pitem root = nullptr;
 public:
-	cartesian_tree() { root = nullptr; }
-
 	void insert(Tkey key, int prior) { insert(root, new item(key, prior)); }
 
 	bool search(Tkey key) {
