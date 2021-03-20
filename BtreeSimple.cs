@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace BtreeCs
 {
@@ -7,10 +6,10 @@ namespace BtreeCs
 	{
 		const int b = 16;   // sizeof(key) * b = ~64 (длина кеш линии)
 		public byte Count = 0;
-		public Tkey[] Keys = new Tkey[2 * b + 1];  // последний key не используется для упрощения реализации
+		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (он нужен для упрощения реализации)
 		public Bnode<Tkey>[] Kids = null;
 		public Bnode(bool leaf)
-		{   // последний kid не используется для упрощения реализации
+		{   // Kids[2*b+1] не используется (он нужен для упрощения реализации)
 			Kids = leaf? null : new Bnode<Tkey>[2 * b + 2]; 
 		}
 		public bool Search(Tkey key)
@@ -22,7 +21,6 @@ namespace BtreeCs
 				return true;
 			return Kids != null && Kids[i].Search(key);
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public (Tkey, Bnode<Tkey>) InsertAtPos(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
 		{
 			Array.Copy(Keys, pos, Keys, pos + 1, Count - pos);
@@ -33,13 +31,18 @@ namespace BtreeCs
 				Kids[pos + 1] = nodeAfterKey;
 			}
 			if (++Count <= 2 * b)
-				return (default(Tkey), (Bnode<Tkey>)null);  // "наверх" ничего не идёт
+				return (default(Tkey), null);
 			var split = new Bnode<Tkey>(Kids == null);
 			Count = split.Count = b;  // в node сейчас 2b+1 ключей; node.Keys[b] "пойдёт наверх"
+			var median = Keys[b];  // ключ Keys[b] не входит в узел и "идёт наверх"
 			Array.Copy(Keys, b + 1, split.Keys, 0, b);
+			Array.Fill(Keys, default(Tkey), b, b + 1);
 			if (Kids != null)
+			{
 				Array.Copy(Kids, b + 1, split.Kids, 0, b + 1);
-			return (Keys[b], split);  // ключ node.Keys[b] не входит в node и "идёт наверх"
+				Array.Fill(Kids, null, b + 1, b + 1);
+			}
+			return (median, split); 
 		}
 		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
 		{
@@ -62,7 +65,7 @@ namespace BtreeCs
 		{
 			(Tkey okey, Bnode<Tkey> overflow_node) = root.Insert(key);
 			if (overflow_node != null)
-			{   // увеличиваем высоту дерева "вверх"
+			{	// увеличиваем высоту дерева "вверх"
 				var old_root = root;
 				root = new Bnode<Tkey>(false) { Count = 1 };
 				(root.Keys[0], root.Kids[0], root.Kids[1]) = (okey, old_root, overflow_node);
