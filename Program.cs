@@ -5,7 +5,7 @@ namespace BtreeCs
 {
     class Program
     {
-        const int n = 10000000; //n queries: 3/4 of them insert, 1/4 search
+        const int n = 10000000; //n queries: ~3/4 of them insert, ~1/4 search
         static void GenerateRandomTests(List<int> content, List<int> seq, List<int> op)
         {
             var rnd = new Random();
@@ -51,7 +51,7 @@ namespace BtreeCs
                     sum1 += btree.Search(seq[i]) ? 1 : 0;
             }
             watch.Stop();
-            Console.WriteLine($"duration B-tree = {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"duration B-tree    = {watch.ElapsedMilliseconds} ms");
 
             int sum2 = 0;
             var set = new SortedSet<int>();
@@ -64,7 +64,7 @@ namespace BtreeCs
                     sum2 += set.Contains(seq[i]) ? 1 : 0;
             }
             watch.Stop();
-            Console.WriteLine($"duration set    = {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"duration SortedSet = {watch.ElapsedMilliseconds} ms");
 
             if (sum1 != sum2)
                 Console.WriteLine($"Sums are different: {sum1} {sum2}");

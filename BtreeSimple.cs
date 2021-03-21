@@ -9,12 +9,12 @@ namespace BtreeCs
 		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (он нужен для упрощения реализации)
 		public Bnode<Tkey>[] Kids = null;
 		public Bnode(bool leaf)
-		{   // Kids[2*b+1] не используется (он нужен для упрощения реализации)
+		{	// Kids[2*b+1] не используется (он нужен для упрощения реализации)
 			Kids = leaf? null : new Bnode<Tkey>[2 * b + 2]; 
 		}
 		public bool Search(Tkey key)
 		{
-			int i = 0;  // Array.FindIndex и BinarySearch заметно медленнее
+			int i = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
 			while (i < Count && Keys[i].CompareTo(key) < 0)
 				i++;    // на коротких массивах линейный поиск быстрее бинарного
 			if (i < Count && Keys[i].Equals(key))
@@ -24,7 +24,7 @@ namespace BtreeCs
 		public (Tkey, Bnode<Tkey>) InsertAtPos(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
 		{
 			Array.Copy(Keys, pos, Keys, pos + 1, Count - pos);
-			Keys[pos] = key;  // "раздвигаем" Keys и kids, чтобы вставить key и node_after_key
+			Keys[pos] = key;  // "раздвигаем" Keys и Kids, чтобы вставить key и nodeAfterKey
 			if (Kids != null)
 			{
 				Array.Copy(Kids, pos + 1, Kids, pos + 2, Count - pos);
@@ -33,8 +33,8 @@ namespace BtreeCs
 			if (++Count <= 2 * b)
 				return (default(Tkey), null);
 			var split = new Bnode<Tkey>(Kids == null);
-			Count = split.Count = b;  // в node сейчас 2b+1 ключей; node.Keys[b] "пойдёт наверх"
-			var median = Keys[b];  // ключ Keys[b] не входит в узел и "идёт наверх"
+			Count = split.Count = b;  // в узле сейчас 2b+1 ключей
+			var median = Keys[b];     // ключ Keys[b] пойдёт на уровень выше
 			Array.Copy(Keys, b + 1, split.Keys, 0, b);
 			Array.Fill(Keys, default(Tkey), b, b + 1);
 			if (Kids != null)
@@ -46,14 +46,14 @@ namespace BtreeCs
 		}
 		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
 		{
-			int pos = 0;  // Array.FindIndex и BinarySearch заметно медленнее
+			int pos = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
 			while (pos < Count && Keys[pos].CompareTo(key) < 0)
 				pos++;    // на коротких массивах линейный поиск быстрее бинарного
-			Bnode<Tkey> overflow_node = null;
+			Bnode<Tkey> overflow = null;
 			if (Kids != null)
-				(key, overflow_node) = Kids[pos].Insert(key);
-			if (Kids == null || overflow_node != null)
-				return InsertAtPos(pos, key, overflow_node);
+				(key, overflow) = Kids[pos].Insert(key);
+			if (Kids == null || overflow != null)
+				return InsertAtPos(pos, key, overflow);
 			return (default(Tkey), null);
 		}
 	}
@@ -63,12 +63,12 @@ namespace BtreeCs
 		public bool Search(Tkey key) { return root.Search(key); }
 		public void Insert(Tkey key)
 		{
-			(Tkey okey, Bnode<Tkey> overflow_node) = root.Insert(key);
-			if (overflow_node != null)
+			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
+			if (overflow != null)
 			{	// увеличиваем высоту дерева "вверх"
-				var old_root = root;
+				var oldRoot = root;
 				root = new Bnode<Tkey>(false) { Count = 1 };
-				(root.Keys[0], root.Kids[0], root.Kids[1]) = (okey, old_root, overflow_node);
+				(root.Keys[0], root.Kids[0], root.Kids[1]) = (okey, oldRoot, overflow);
 			}
 		}
 	}
