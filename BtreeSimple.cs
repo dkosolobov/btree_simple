@@ -12,7 +12,7 @@ namespace BtreeCs
 		{
 			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
 			if (overflow != null)
-			{   // увеличиваем высоту дерева "вверх"
+			{	// увеличиваем высоту дерева "вверх"
 				var oldRoot = root;
 				root = new Bnode<Tkey>(leaf: false) { Count = 1 };
 				root.Keys[0] = okey; 
@@ -28,14 +28,6 @@ namespace BtreeCs
 		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (но нужен для упрощения реализации)
 		public Bnode<Tkey>[] Kids = null;  // Kids[2*b+1] не используется (но нужен для упрощения реализации)
 		public Bnode(bool leaf) => Kids = leaf ? null : new Bnode<Tkey>[2 * b + 2]; 
-
-		private int GetKeyPosition(Tkey key)
-		{
-			int pos = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
-			while (pos < Count && Keys[pos].CompareTo(key) < 0)
-				pos++;    // на коротких массивах линейный поиск быстрее бинарного
-			return pos;
-		}
 
 		public bool Contains(Tkey key)
 		{
@@ -54,6 +46,14 @@ namespace BtreeCs
 			if (Kids == null || overflow != null)
 				return InsertAt(pos, key, overflow);
 			return (default, null);
+		}
+
+		private int GetKeyPosition(Tkey key)
+		{
+			int pos = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
+			while (pos < Count && Keys[pos].CompareTo(key) < 0)
+				pos++;    // на коротких массивах линейный поиск быстрее бинарного
+			return pos;
 		}
 
 		private (Tkey, Bnode<Tkey>) InsertAt(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
