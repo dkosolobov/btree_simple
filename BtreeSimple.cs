@@ -2,6 +2,24 @@
 
 namespace BtreeCs
 {
+	class BtreeSimple<Tkey> where Tkey : IComparable<Tkey>
+	{
+		private Bnode<Tkey> root = new Bnode<Tkey>(leaf: true);
+
+		public bool Contains(Tkey key) => root.Contains(key);
+
+		public void Add(Tkey key)
+		{
+			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
+			if (overflow != null)
+			{   // увеличиваем высоту дерева "вверх"
+				var oldRoot = root;
+				root = new Bnode<Tkey>(false) { Count = 1 };
+				(root.Keys[0], root.Kids[0], root.Kids[1]) = (okey, oldRoot, overflow);
+			}
+		}
+	}
+
 	class Bnode<Tkey> where Tkey : IComparable<Tkey>
 	{
 		const int b = 16;   // sizeof(key) * b = ~64 (длина кеш линии)
@@ -60,22 +78,6 @@ namespace BtreeCs
 			if (Kids == null || overflow != null)
 				return InsertAt(pos, key, overflow);
 			return (default, null);
-		}
-	}
-
-	class BtreeSimple<Tkey> where Tkey : IComparable<Tkey>
-	{
-		private Bnode<Tkey> root = new Bnode<Tkey>(leaf: true);
-		public bool Contains(Tkey key) => root.Contains(key);
-		public void Add(Tkey key)
-		{
-			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
-			if (overflow != null)
-			{	// увеличиваем высоту дерева "вверх"
-				var oldRoot = root;
-				root = new Bnode<Tkey>(false) { Count = 1 };
-				(root.Keys[0], root.Kids[0], root.Kids[1]) = (okey, oldRoot, overflow);
-			}
 		}
 	}
 }
