@@ -46,9 +46,9 @@ namespace BtreeCs
             for (int i = 0; i < n; i++)
             {
                 if (op[i] == 0)
-                    btree.Insert(seq[i]);
+                    btree.Add(seq[i]);
                 else if (op[i] == 1)
-                    sum1 += btree.Search(seq[i]) ? 1 : 0;
+                    sum1 += btree.Contains(seq[i]) ? 1 : 0;
             }
             watch.Stop();
             Console.WriteLine($"duration B-tree    = {watch.ElapsedMilliseconds} ms");

@@ -9,14 +9,14 @@ namespace BtreeCs
 		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (но нужен для упрощения реализации)
 		public Bnode<Tkey>[] Kids = null;  // Kids[2*b+1] не используется (но нужен для упрощения реализации)
 		public Bnode(bool leaf) => Kids = leaf ? null : new Bnode<Tkey>[2 * b + 2]; 
-		public bool Search(Tkey key)
+		public bool Contains(Tkey key)
 		{
 			int i = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
 			while (i < Count && Keys[i].CompareTo(key) < 0)
 				i++;    // на коротких массивах линейный поиск быстрее бинарного
 			if (i < Count && Keys[i].Equals(key))
 				return true;
-			return Kids != null && Kids[i].Search(key);
+			return Kids != null && Kids[i].Contains(key);
 		}
 		public (Tkey, Bnode<Tkey>) InsertAtPos(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
 		{
@@ -57,8 +57,8 @@ namespace BtreeCs
 	class BtreeSimple<Tkey> where Tkey : IComparable<Tkey>
 	{
 		private Bnode<Tkey> root = new Bnode<Tkey>(leaf: true);
-		public bool Search(Tkey key) => root.Search(key);
-		public void Insert(Tkey key)
+		public bool Contains(Tkey key) => root.Contains(key);
+		public void Add(Tkey key)
 		{
 			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
 			if (overflow != null)
