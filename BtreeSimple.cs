@@ -6,12 +6,9 @@ namespace BtreeCs
 	{
 		const int b = 16;   // sizeof(key) * b = ~64 (длина кеш линии)
 		public byte Count = 0;
-		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (он нужен для упрощения реализации)
-		public Bnode<Tkey>[] Kids = null;
-		public Bnode(bool leaf)
-		{	// Kids[2*b+1] не используется (он нужен для упрощения реализации)
-			Kids = leaf? null : new Bnode<Tkey>[2 * b + 2]; 
-		}
+		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (но нужен для упрощения реализации)
+		public Bnode<Tkey>[] Kids = null;  // Kids[2*b+1] не используется (но нужен для упрощения реализации)
+		public Bnode(bool leaf) => Kids = leaf ? null : new Bnode<Tkey>[2 * b + 2]; 
 		public bool Search(Tkey key)
 		{
 			int i = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
@@ -60,7 +57,7 @@ namespace BtreeCs
 	class BtreeSimple<Tkey> where Tkey : IComparable<Tkey>
 	{
 		private Bnode<Tkey> root = new Bnode<Tkey>(leaf: true);
-		public bool Search(Tkey key) { return root.Search(key); }
+		public bool Search(Tkey key) => root.Search(key);
 		public void Insert(Tkey key)
 		{
 			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
