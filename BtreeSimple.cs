@@ -14,8 +14,9 @@ namespace BtreeCs
 			if (overflow != null)
 			{   // увеличиваем высоту дерева "вверх"
 				var oldRoot = root;
-				root = new Bnode<Tkey>(false) { Count = 1 };
-				(root.Keys[0], root.Kids[0], root.Kids[1]) = (okey, oldRoot, overflow);
+				root = new Bnode<Tkey>(leaf: false) { Count = 1 };
+				root.Keys[0] = okey; 
+				(root.Kids[0], root.Kids[1]) = (oldRoot, overflow);
 			}
 		}
 	}
@@ -23,7 +24,7 @@ namespace BtreeCs
 	class Bnode<Tkey> where Tkey : IComparable<Tkey>
 	{
 		const int b = 16;   // sizeof(key) * b = ~64 (длина кеш линии)
-		public byte Count = 0;
+		public int Count = 0;
 		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (но нужен для упрощения реализации)
 		public Bnode<Tkey>[] Kids = null;  // Kids[2*b+1] не используется (но нужен для упрощения реализации)
 		public Bnode(bool leaf) => Kids = leaf ? null : new Bnode<Tkey>[2 * b + 2]; 
@@ -42,6 +43,17 @@ namespace BtreeCs
 			if (pos < Count && Keys[pos].Equals(key))
 				return true;
 			return Kids != null && Kids[pos].Contains(key);
+		}
+
+		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
+		{
+			int pos = GetKeyPosition(key);
+			Bnode<Tkey> overflow = null;
+			if (Kids != null)
+				(key, overflow) = Kids[pos].Insert(key);
+			if (Kids == null || overflow != null)
+				return InsertAt(pos, key, overflow);
+			return (default, null);
 		}
 
 		private (Tkey, Bnode<Tkey>) InsertAt(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
@@ -67,17 +79,6 @@ namespace BtreeCs
 				Array.Copy(Kids, b + 1, split.Kids, 0, b + 1);
 			Count = b;
 			return (median, split);
-		}
-
-		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
-		{
-			int pos = GetKeyPosition(key);
-			Bnode<Tkey> overflow = null;
-			if (Kids != null)
-				(key, overflow) = Kids[pos].Insert(key);
-			if (Kids == null || overflow != null)
-				return InsertAt(pos, key, overflow);
-			return (default, null);
 		}
 	}
 }
