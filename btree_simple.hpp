@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <tuple>
 
-static const int b = 16;  // sizeof(key) * b = 64 (длина кеш линии)
 static struct bleaf {
+	static const int b = 16;  // sizeof(key) * b = 64 (длина кеш линии)
 	bool leaf;
 	uint8_t count;
 	uint32_t keys[2 * b + 1];  // keys[2*b] не используется (но нужен для упрощения реализации)
