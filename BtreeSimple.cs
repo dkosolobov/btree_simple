@@ -9,20 +9,23 @@ namespace BtreeCs
 		public Tkey[] Keys = new Tkey[2 * b + 1];  // Keys[2*b] не используется (но нужен для упрощения реализации)
 		public Bnode<Tkey>[] Kids = null;  // Kids[2*b+1] не используется (но нужен для упрощения реализации)
 		public Bnode(bool leaf) => Kids = leaf ? null : new Bnode<Tkey>[2 * b + 2]; 
+
 		private int GetKeyPosition(Tkey key)
-        {
+		{
 			int pos = 0;  // Array.FindIndex и Array.BinarySearch заметно медленнее
 			while (pos < Count && Keys[pos].CompareTo(key) < 0)
 				pos++;    // на коротких массивах линейный поиск быстрее бинарного
 			return pos;
 		}
+
 		public bool Contains(Tkey key)
 		{
-			int i = GetKeyPosition(key);
-			if (i < Count && Keys[i].Equals(key))
+			int pos = GetKeyPosition(key);
+			if (pos < Count && Keys[pos].Equals(key))
 				return true;
-			return Kids != null && Kids[i].Contains(key);
+			return Kids != null && Kids[pos].Contains(key);
 		}
+
 		private (Tkey, Bnode<Tkey>) InsertAtPos(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
 		{
 			Array.Copy(Keys, pos, Keys, pos + 1, Count - pos);
@@ -36,16 +39,18 @@ namespace BtreeCs
 				return (default, null);
 			return Split();
 		}
+
 		private (Tkey, Bnode<Tkey>) Split()
-        {
+		{
 			var median = Keys[b];     // ключ Keys[b] пойдёт на уровень выше;
 			var split = new Bnode<Tkey>(Kids == null) { Count = b };
-			Count = b;  // в узле сейчас 2b+1 ключей
 			Array.Copy(Keys, b + 1, split.Keys, 0, b);
 			if (Kids != null)
 				Array.Copy(Kids, b + 1, split.Kids, 0, b + 1);
+			Count = b;  // в узле было 2b+1 ключей
 			return (median, split);
 		}
+
 		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
 		{
 			int pos = GetKeyPosition(key);
@@ -57,6 +62,7 @@ namespace BtreeCs
 			return (default, null);
 		}
 	}
+
 	class BtreeSimple<Tkey> where Tkey : IComparable<Tkey>
 	{
 		private Bnode<Tkey> root = new Bnode<Tkey>(leaf: true);
