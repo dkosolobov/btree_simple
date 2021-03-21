@@ -26,7 +26,7 @@ namespace BtreeCs
 			return Kids != null && Kids[pos].Contains(key);
 		}
 
-		private (Tkey, Bnode<Tkey>) InsertAtPos(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
+		private (Tkey, Bnode<Tkey>) InsertAt(int pos, Tkey key, Bnode<Tkey> nodeAfterKey)
 		{
 			Array.Copy(Keys, pos, Keys, pos + 1, Count - pos);
 			Keys[pos] = key;  // "раздвигаем" Keys и Kids, чтобы вставить key и nodeAfterKey
@@ -42,12 +42,12 @@ namespace BtreeCs
 
 		private (Tkey, Bnode<Tkey>) Split()
 		{
-			var median = Keys[b];     // ключ Keys[b] пойдёт на уровень выше;
+			var median = Keys[b];     // Keys[b] является медианой Keys[0..2*b]
 			var split = new Bnode<Tkey>(Kids == null) { Count = b };
 			Array.Copy(Keys, b + 1, split.Keys, 0, b);
 			if (Kids != null)
 				Array.Copy(Kids, b + 1, split.Kids, 0, b + 1);
-			Count = b;  // в узле было 2b+1 ключей
+			Count = b;
 			return (median, split);
 		}
 
@@ -58,7 +58,7 @@ namespace BtreeCs
 			if (Kids != null)
 				(key, overflow) = Kids[pos].Insert(key);
 			if (Kids == null || overflow != null)
-				return InsertAtPos(pos, key, overflow);
+				return InsertAt(pos, key, overflow);
 			return (default, null);
 		}
 	}
