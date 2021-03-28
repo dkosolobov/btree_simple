@@ -6,11 +6,11 @@ static const int b = 16;  // sizeof(key) * b = ~64 (длина кеш линии
 struct bleaf {
 	bool leaf;
 	uint8_t count;
-	int keys[2 * b + 1];  // keys[2*b] не используется (но нужен для упрощения реализации)
+	int keys[2 * b + 1];  // keys[2*b] не используется, но нужен для упрощения реализации
 };
 
 struct bnode : bleaf {
-	bnode* kids[2 * b + 2];    // kids[2*b+1] не используется (но нужен для упрощения реализации)
+	bnode* kids[2 * b + 2];    // kids[2*b+1] не используется, но нужен для упрощения реализации
 
 	bool find(int key) const {
 		size_t i = 0;
