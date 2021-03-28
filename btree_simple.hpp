@@ -35,10 +35,10 @@ static struct bnode : public bleaf {
 
 private:
 	std::pair<uint32_t, bnode*> insert_at_pos(size_t pos, uint32_t key, bnode* node_after_key) {
-		memmove(keys + pos + 1, keys + pos, (count - pos) * sizeof(keys[0]));
+		memmove(keys + pos + 1, keys + pos, (count - pos) * sizeof *keys);
 		keys[pos] = key;  // "раздвигаем" keys и kids, чтобы вставить key и node_after_key
 		if (!leaf) {
-			memmove(kids + pos + 2, kids + pos + 1, (count - pos) * sizeof(kids[0]));
+			memmove(kids + pos + 2, kids + pos + 1, (count - pos) * sizeof *kids);
 			kids[pos + 1] = node_after_key;
 		}
 		if (++count <= 2 * b)
@@ -62,8 +62,8 @@ public:
 	bool search(uint32_t key) const { return root->search(key); }
 
 	void insert(uint32_t key) {
-		auto [okey, overflow_node] = root->insert(key);
-		if (overflow_node != nullptr)  // увеличиваем высоту дерева "вверх"
-			root = new bnode{ false, 1, { okey }, { root, overflow_node } };
+		auto [okey, overflow] = root->insert(key);
+		if (overflow != nullptr)  // увеличиваем высоту дерева "вверх"
+			root = new bnode{ false, 1, { okey }, { root, overflow } };
 	}
 };
