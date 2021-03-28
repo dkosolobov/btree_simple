@@ -51,7 +51,7 @@ int main()
         if (op[i] == 0) {
             btree.insert(seq[i]);
         } else if (op[i] == 1) {
-            sum1 += btree.search(seq[i]) ? 1 : 0;
+            sum1 += btree.find(seq[i]) ? 1 : 0;
         }
     }
     auto end = std::chrono::steady_clock::now();
@@ -81,7 +81,7 @@ int main()
     //    if (op[i] == 0) {
     //        btree2.insert(seq[i]);
     //    } else if (op[i] == 1) {
-    //        sum3 += btree2.search(seq[i]) ? 1 : 0;
+    //        sum3 += btree2.find(seq[i]) ? 1 : 0;
     //    }
     //}
     //end = std::chrono::steady_clock::now();
