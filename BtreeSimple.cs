@@ -31,8 +31,7 @@ namespace BtreeCs
 		public bool Contains(Tkey key)
 		{
 			int i = GetKeyPosition(key);
-			return (i < Count && Keys[i].Equals(key))
-				|| (Kids != null && Kids[i].Contains(key));
+			return (i < Count && Keys[i].Equals(key)) || (Kids != null && Kids[i].Contains(key));
 		}
 
 		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
