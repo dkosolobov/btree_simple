@@ -16,9 +16,8 @@ struct bnode : bleaf {
 		size_t i = 0;
 		while (i < count && keys[i] < key)
 			i++;   // на коротких массивах линейный поиск быстрее бинарного
-		if (i < count && keys[i] == key)
-			return true;
-		return !leaf && kids[i]->find(key);
+		return (i < count && keys[i] == key) ||
+			(!leaf && kids[i]->find(key));
 	}
 
 	std::pair<int, bnode*> insert(int key) {
