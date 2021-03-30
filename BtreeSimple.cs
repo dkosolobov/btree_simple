@@ -37,12 +37,12 @@ namespace BtreeCs
 		public (Tkey, Bnode<Tkey>) Insert(Tkey key)
 		{
 			int i = GetKeyPosition(key);
-			Bnode<Tkey> overflow = null;
-			if (Kids != null)
-				(key, overflow) = Kids[i].Insert(key);
-			if (Kids != null && overflow == null)
+			if (Kids == null)
+				return InsertAt(i, key, null);
+			(Tkey okey, Bnode<Tkey> overflow) = Kids[i].Insert(key);
+			if (overflow == null)
 				return (default, null);
-			return InsertAt(i, key, overflow);
+			return InsertAt(i, okey, overflow);
 		}
 
 		private int GetKeyPosition(Tkey key)
