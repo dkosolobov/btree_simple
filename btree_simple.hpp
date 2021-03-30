@@ -23,12 +23,12 @@ struct bnode : bleaf {
 		size_t i = 0;
 		while (i < count && keys[i] < key)
 			i++;  // на коротких массивах линейный поиск быстрее бинарного
-		bnode* overflow = nullptr;
-		if (!leaf)
-			std::tie(key, overflow) = kids[i]->insert(key);
-		if (!leaf && overflow == nullptr)
+		if (leaf)
+			return insert_at(i, key, nullptr);
+		auto [okey, overflow] = kids[i]->insert(key);
+		if (overflow == nullptr)
 			return { 0, nullptr };
-		return insert_at(i, key, overflow);
+		return insert_at(i, okey, overflow);
 	}
 
 private:
