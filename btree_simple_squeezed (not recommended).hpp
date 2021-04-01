@@ -2,7 +2,7 @@
 #include <tuple>
 using namespace std;
 
-const int b = 16; // sizeof(key) * b = 64 (длина кеш линии)
+const int b = 16; // sizeof(key) * b = 64 (РґР»РёРЅР° РєРµС€ Р»РёРЅРёРё)
 struct leaf {
 	bool l;
 	uint8_t n;
