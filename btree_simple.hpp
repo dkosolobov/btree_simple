@@ -25,10 +25,10 @@ struct bnode : bleaf {
 			i++;  // на коротких массивах линейный поиск быстрее бинарного
 		if (leaf)
 			return insert_at(i, key, nullptr);
-		auto [okey, overflow] = kids[i]->insert(key);
+		auto [overkey, overflow] = kids[i]->insert(key);
 		if (overflow == nullptr)
 			return { 0, nullptr };
-		return insert_at(i, okey, overflow);
+		return insert_at(i, overkey, overflow);
 	}
 
 private:
@@ -60,8 +60,8 @@ public:
 	bool find(int key) const { return root->find(key); }
 
 	void insert(int key) {
-		auto [okey, overflow] = root->insert(key);
+		auto [overkey, overflow] = root->insert(key);
 		if (overflow != nullptr)  // увеличиваем высоту дерева "вверх"
-			root = new bnode{ false, 1, { okey }, { root, overflow } };
+			root = new bnode{ false, 1, { overkey }, { root, overflow } };
 	}
 };
