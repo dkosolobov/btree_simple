@@ -53,14 +53,14 @@ namespace BtreeCs
 			return i;
 		}
 
-		private (Tkey, Bnode<Tkey>) InsertAt(int i, Tkey key, Bnode<Tkey> nodeAfterKey)
+		private (Tkey, Bnode<Tkey>) InsertAt(int i, Tkey key, Bnode<Tkey> keyNode)
 		{
 			Array.Copy(Keys, i, Keys, i + 1, Count - i);
-			Keys[i] = key;  // раздвигаем Keys и Kids, чтобы вставить key и nodeAfterKey
-			if (Kids != null)
+			Keys[i] = key;  // раздвигаем Keys и Kids, чтобы вставить key и keyNode
+			if (keyNode != null)
 			{
 				Array.Copy(Kids, i + 1, Kids, i + 2, Count - i);
-				Kids[i + 1] = nodeAfterKey;
+				Kids[i + 1] = keyNode;
 			}
 			if (++Count <= 2 * b)
 				return (default, null);

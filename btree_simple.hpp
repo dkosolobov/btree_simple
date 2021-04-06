@@ -32,12 +32,12 @@ struct bnode : bleaf {
 	}
 
 private:
-	std::pair<int, bnode*> insert_at(size_t i, int key, bnode* node_after_key) {
+	std::pair<int, bnode*> insert_at(size_t i, int key, bnode* key_node) {
 		memmove(keys + i + 1, keys + i, (count - i) * sizeof *keys);
-		keys[i] = key;  // раздвигаем keys и kids, чтобы вставить key и node_after_key
-		if (!leaf) {
+		keys[i] = key;  // раздвигаем keys и kids, чтобы вставить key и key_node
+		if (key_node != nullptr) {
 			memmove(kids + i + 2, kids + i + 1, (count - i) * sizeof *kids);
-			kids[i + 1] = node_after_key;
+			kids[i + 1] = key_node;
 		}
 		if (++count <= 2 * b)
 			return { 0, nullptr };

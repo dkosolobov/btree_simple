@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <tuple>
 using namespace std;
 
 const int b = 16; // sizeof(key) * b = 64 (длина кеш линии)
@@ -31,7 +30,7 @@ private:
 	pair<int, node*> insert_at(int i, int k, node* x) {
 		memmove(ks + i + 1, ks + i, (n - i) * sizeof *ks);
 		ks[i] = k;
-		if (!l) {
+		if (x) {
 			memmove(kids + i + 2, kids + i + 1, (n - i) * sizeof *kids);
 			kids[i + 1] = x;
 		}
