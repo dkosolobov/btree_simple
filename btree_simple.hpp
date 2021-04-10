@@ -1,6 +1,6 @@
-#pragma once
-#include <algorithm>
-#include <tuple>
+#pragma once         // Для компиляции нужно включить C++17:
+#include <algorithm> // - VS: флаг /std:c++17 в Project > Properties > C/C++ > Language > C++ Language Standard 
+#include <tuple>     // - clang/gcc: флаг -std=c++17 или -std=c++1z
 
 static const int b = 16;  // sizeof(key) * b = ~64 (длина кеш линии)
 struct bleaf {
