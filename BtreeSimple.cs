@@ -10,12 +10,12 @@ namespace BtreeCs
 
 		public void Add(Tkey key)
 		{
-			(Tkey okey, Bnode<Tkey> overflow) = root.Insert(key);
+			(Tkey overkey, Bnode<Tkey> overflow) = root.Insert(key);
 			if (overflow == null)
 				return;
 			var oldRoot = root; // увеличиваем высоту дерева "вверх"
 			root = new Bnode<Tkey>(leaf: false) { Count = 1 };
-			root.Keys[0] = okey; 
+			root.Keys[0] = overkey; 
 			(root.Kids[0], root.Kids[1]) = (oldRoot, overflow);
 		}
 	}
@@ -39,10 +39,10 @@ namespace BtreeCs
 			int i = GetKeyPosition(key);
 			if (Kids == null)
 				return InsertAt(i, key, null);
-			(Tkey okey, Bnode<Tkey> overflow) = Kids[i].Insert(key);
+			(Tkey overkey, Bnode<Tkey> overflow) = Kids[i].Insert(key);
 			if (overflow == null)
 				return (default, null);
-			return InsertAt(i, okey, overflow);
+			return InsertAt(i, overkey, overflow);
 		}
 
 		private int GetKeyPosition(Tkey key)
