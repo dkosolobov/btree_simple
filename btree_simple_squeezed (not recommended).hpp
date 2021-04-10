@@ -1,4 +1,4 @@
-#include <algorithm>
+#include <algorithm>  // Для компиляции нужно включить C++17
 using namespace std;
 
 const int b = 16; // sizeof(key) * b = 64 (длина кеш линии)
